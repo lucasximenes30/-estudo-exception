@@ -4,11 +4,11 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class UserModel {
-    private Long id;
+    private int id;
     private String name;
     private String email;
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -24,7 +24,7 @@ public class UserModel {
         return Objects.hash(id, name, email, birthDate);
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -66,7 +66,7 @@ public class UserModel {
 
     }
 
-    public UserModel(Long id, String name, String email, OffsetDateTime birthDate) {
+    public UserModel(int id, String name, String email, OffsetDateTime birthDate) {
         this.id = id;
         this.name = name;
         this.email = email;

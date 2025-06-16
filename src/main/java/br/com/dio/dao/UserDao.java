@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
-    private Long nextId = 1L;
+    private int nextId = 1;
 
     private final List <UserModel> models = new ArrayList<>();
 
@@ -22,12 +22,19 @@ public class UserDao {
         models.add(model);
         return model;
     }
-    public UserModel findById(final Long id){
-        var message = String.format("Não existe usuario com o id %d");
+    public void delete(final int id){
+        var toDelete = findById(id);
+        models.remove(toDelete);
+    }
+    public UserModel findById(final int id){
+        var message = String.format("Não existe usuario com o id %d",id);
         return models.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new UserNotFoundException(message));
 
+    }
+    public List<UserModel> findAll(){
+        return models;
     }
 }
