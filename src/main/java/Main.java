@@ -1,6 +1,8 @@
 import br.com.dio.dao.UserDao;
+import br.com.dio.exception.CustomException;
 import br.com.dio.exception.EmptyStorageException;
 import br.com.dio.exception.UserNotFoundException;
+import br.com.dio.exception.ValidatorException;
 import br.com.dio.model.MenuOption;
 import br.com.dio.model.UserModel;
 
@@ -10,6 +12,8 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+
+import static br.com.dio.validator.UserValidator.verifyModel;
 
 public class Main {
     private final static UserDao dao = new UserDao();
@@ -28,8 +32,14 @@ public class Main {
             var selectedOption = MenuOption.values()[userInput - 1];
             switch (selectedOption){
                 case SAVE -> {
-                    var user = dao.save(requestToSave());
-                    System.out.printf("Usuario salvo com sucesso %s", user);
+                    try {
+                        var user = dao.save(requestToSave());
+                        System.out.printf("Usuario salvo com sucesso %s", user);
+                    }catch (CustomException ex){
+                        System.out.println(ex.getMessage());
+                        ex.printStackTrace();
+                    }
+
                 }
                 case UPDATE -> {
                     try {
@@ -37,6 +47,12 @@ public class Main {
                         System.out.printf("Usuario atualizado com sucesso %s", user);
                     }catch (UserNotFoundException | EmptyStorageException ex){
                         System.out.println(ex.getMessage());
+
+                    } catch (ValidatorException ex) {
+                        System.out.println(ex.getMessage());
+                        ex.printStackTrace();
+                    } finally {
+                        System.out.println("---------------------------------");
                     }
 
                 }
@@ -46,6 +62,8 @@ public class Main {
                         System.out.println("Usuario excluido com sucesso");
                     }catch (UserNotFoundException | EmptyStorageException ex){
                         System.out.println(ex.getMessage());
+                    }finally {
+                        System.out.println("-------------------------------");
                     }
 
                 }
@@ -57,6 +75,8 @@ public class Main {
                         System.out.println(user);
                     }catch (UserNotFoundException | EmptyStorageException ex){
                         System.out.println(ex.getMessage());
+                    }finally {
+                        System.out.println("---------------------------------");
                     }
 
                 }
@@ -85,10 +105,22 @@ public class Main {
         var birthdayString = scanner.next();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         var birthday = LocalDate.parse((birthdayString), formatter);
-        var user = new UserModel(0, name, email,birthday);
-        return user;
+        return validateInput(0,name, email, birthday);
+
     }
-    private static UserModel requestToUpdate(){
+
+    private static UserModel validateInput(final int id, final String name, final String email, final LocalDate birthday) {
+        var user = new UserModel(0, name, email,birthday);
+        try {
+
+        verifyModel(user);
+        return user;
+        }catch (ValidatorException ex){
+            throw new CustomException("O seu modelo contém erros: " + ex.getMessage(), ex);
+        }
+    }
+
+    private static UserModel requestToUpdate() throws ValidatorException{
         System.out.println("Informe o nome do usuario: ");
         var name = scanner.next();
         System.out.println("Informe o identificador do usuario: ");
@@ -99,8 +131,8 @@ public class Main {
         var birthdayString = scanner.next();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         var birthday = LocalDate.parse((birthdayString), formatter);
-        var user = new UserModel(0, name, email,birthday);
-        return user;
+        UserModel model = null;
+        return validateInput(id,name, email, birthday);
     }
 
 }
