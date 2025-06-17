@@ -1,5 +1,6 @@
 package br.com.dio.model;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
@@ -7,6 +8,7 @@ public class UserModel {
     private int id;
     private String name;
     private String email;
+    private LocalDate birthDate;
 
     public int getId() {
         return id;
@@ -44,11 +46,11 @@ public class UserModel {
         this.email = email;
     }
 
-    public OffsetDateTime getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(OffsetDateTime birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -66,13 +68,12 @@ public class UserModel {
 
     }
 
-    public UserModel(int id, String name, String email, OffsetDateTime birthDate) {
+    public UserModel(int id, String name, String email, LocalDate birthDate) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.birthDate = birthDate;
     }
 
-    private OffsetDateTime birthDate;
 
 }
